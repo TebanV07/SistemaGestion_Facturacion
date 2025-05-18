@@ -1,0 +1,31 @@
+/* src/app/app.component.scss */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-container {
+  display: flex;
+  flex: 1;
+  margin-top: 64px; /* Altura del header */
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
+  background-color: #f5f7fa;
+  min-height: calc(100vh - 64px);
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.main-content.with-sidebar {
+  margin-left: 250px;
+}
+
+@media (max-width: 768px) {
+  .main-content.with-sidebar {
+    margin-left: 64px;
+  }
+}

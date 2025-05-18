@@ -1,0 +1,36 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <div class="sidebar-header">
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <i class="fas" [class.fa-bars]="collapsed" [class.fa-times]="!collapsed"></i>
+    </button>
+  </div>
+  
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i>
+          <span *ngIf="!collapsed">Dashboard</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a routerLink="/facturas" routerLinkActive="active" class="nav-link">
+          <i class="fas fa-file-invoice"></i>
+          <span *ngIf="!collapsed">Facturas</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a routerLink="/clientes" routerLinkActive="active" class="nav-link">
+          <i class="fas fa-users"></i>
+          <span *ngIf="!collapsed">Clientes</span>
+        </a>
+      </li>
+      
+      <li class="nav-item">
+        <a routerLink="/productos" routerLinkActive="active" class="nav-link">
+          <i class="fas fa-box"></i>
+          <span *ngIf="!collapsed">Productos</span>
+        </a>
+      </li>
