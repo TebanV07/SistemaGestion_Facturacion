@@ -1,1 +1,149 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <h1>Panel de Control</h1>
+    <p>Resumen general de tu negocio</p>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="error-container">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error() }}</p>
+    <button (click)="refreshData()" class="btn btn-primary">Reintentar</button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading() && !error()">
+    <!-- Estadísticas Principales -->
+    <div class="stats-grid">
+      <div class="stat-card clients">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ stats().totalClientes }}</h3>
+          <p>Clientes Activos</p>
+        </div>
+        <div class="stat-action">
+          <a routerLink="/clientes" class="btn-link">Ver todos</a>
+        </div>
+      </div>
+
+      <div class="stat-card products">
+        <div class="stat-icon">
+          <i class="fas fa-box"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ stats().totalProductos }}</h3>
+          <p>Productos</p>
+        </div>
+        <div class="stat-action">
+          <a routerLink="/productos" class="btn-link">Gestionar</a>
+        </div>
+      </div>
+
+      <div class="stat-card invoices">
+        <div class="stat-icon">
+          <i class="fas fa-file-invoice"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ stats().totalFacturas }}</h3>
+          <p>Facturas</p>
+        </div>
+        <div class="stat-action">
+          <a routerLink="/facturas" class="btn-link">Ver facturas</a>
+        </div>
+      </div>
+
+      <div class="stat-card sales">
+        <div class="stat-icon">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ formatCurrency(stats().ventasDelMes) }}</h3>
+          <p>Ventas del Mes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alertas y Notificaciones -->
+    <div class="alerts-section" *ngIf="stats().facturasPendientes > 0 || stats().productosConPocoStock > 0">
+      <h2>Alertas Importantes</h2>
+      <div class="alerts-grid">
+        <div class="alert-card warning" *ngIf="stats().facturasPendientes > 0">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>
+            <h4>Facturas Pendientes</h4>
+            <p>{{ stats().facturasPendientes }} facturas requieren atención</p>
+          </div>
+          <a routerLink="/facturas" class="btn btn-warning">Revisar</a>
+        </div>
+
+        <div class="alert-card danger" *ngIf="stats().productosConPocoStock > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          <div>
+            <h4>Stock Bajo</h4>
+            <p>{{ stats().productosConPocoStock }} productos con poco stock</p>
+          </div>
+          <a routerLink="/productos" class="btn btn-danger">Ver productos</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    <div class="quick-actions">
+      <h2>Acciones Rápidas</h2>
+      <div class="actions-grid">
+        <button routerLink="/facturas/nueva" class="action-btn primary">
+          <i class="fas fa-plus"></i>
+          <span>Nueva Factura</span>
+        </button>
+        
+        <button routerLink="/clientes/nuevo" class="action-btn secondary">
+          <i class="fas fa-user-plus"></i>
+          <span>Nuevo Cliente</span>
+        </button>
+        
+        <button routerLink="/productos/nuevo" class="action-btn tertiary">
+          <i class="fas fa-box-open"></i>
+          <span>Nuevo Producto</span>
+        </button>
+        
+        <button (click)="refreshData()" class="action-btn quaternary" [disabled]="loading()">
+          <i class="fas fa-sync-alt" [class.spinning]="loading()"></i>
+          <span>Actualizar Datos</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Últimas Actividades -->
+    <div class="recent-activity" *ngIf="recentActivities().length > 0">
+      <h2>Actividad Reciente</h2>
+      <div class="activity-list">
+        <div class="activity-item" *ngFor="let activity of recentActivities()">
+          <i class="fas" [ngClass]="activity.icon"></i>
+          <div class="activity-content">
+            <p>{{ activity.description }}</p>
+            <small>{{ getRelativeTime(activity.date) }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State for Activities -->
+    <div class="recent-activity" *ngIf="recentActivities().length === 0">
+      <h2>Actividad Reciente</h2>
+      <div class="empty-state">
+        <i class="fas fa-history"></i>
+        <p>No hay actividad reciente</p>
+        <small>Las actividades aparecerán aquí cuando comiences a usar el sistema</small>
+      </div>
+    </div>
+  </div>
+</div>

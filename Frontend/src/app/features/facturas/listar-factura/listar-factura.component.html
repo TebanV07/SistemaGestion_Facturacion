@@ -1,1 +1,122 @@
-<p>listar-factura works!</p>
+<div class="facturas-container">
+  <!-- Header con título y botones de acción -->
+  <div class="header">
+    <h1>Gestión de Facturas</h1>
+    <button class="btn btn-primary" (click)="navigateToCrearFactura()">
+      <i class="fas fa-plus"></i> Nueva Factura
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="filters-container">
+    <div class="search-bar">
+      <div class="search-input">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (input)="onSearch()" 
+          placeholder="Buscar por número o cliente..."
+        >
+        <button class="search-btn" (click)="onSearch()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+    
+    <div class="filters">
+      <div class="filter-group">
+        <label>Estado:</label>
+        <select [(ngModel)]="selectedFilter" (change)="onFilterChange()">
+          <option value="todas">Todas</option>
+          <option value="emitida">Emitidas</option>
+          <option value="pagada">Pagadas</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label>Desde:</label>
+        <input 
+          type="date" 
+          [(ngModel)]="dateRange().start" 
+          (change)="onFilterChange()"
+        >
+      </div>
+      
+      <div class="filter-group">
+        <label>Hasta:</label>
+        <input 
+          type="date" 
+          [(ngModel)]="dateRange().end" 
+          (change)="onFilterChange()"
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de carga -->
+  <div *ngIf="loading()" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando facturas...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error()" class="error-message">
+    <i class="fas fa-exclamation-circle"></i>
+    <p>{{ error() }}</p>
+    <button (click)="loadFacturas()">Reintentar</button>
+  </div>
+
+  <!-- Tabla de facturas -->
+  <div *ngIf="!loading() && !error() && filteredFacturas().length > 0" class="facturas-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Cliente</th>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let factura of filteredFacturas()" (click)="navigateToDetalleFactura(factura.id ?? '')" class="factura-row">
+          <td>{{ factura.numero }}</td>
+          <td>{{ factura.clienteNombre }}</td>
+          <td>{{ factura.fechaEmision | date:'dd/MM/yyyy' }}</td>
+          <td class="text-right">{{ factura.total | currency }}</td>
+          <td>
+            <span class="badge" [ngClass]="'badge-' + factura.estado">
+              {{ factura.estado }}
+            </span>
+          </td>
+          <td class="actions">
+            <button class="btn-icon" (click)="navigateToDetalleFactura(factura.id ?? '')" title="Ver detalles">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn-icon" (click)="generarPDF(factura.id ?? '', $event)" title="Generar PDF">
+              <i class="fas fa-file-pdf"></i>
+            </button>
+            <button 
+              *ngIf="factura.estado === 'pendiente'"
+              class="btn-icon delete" 
+              (click)="cancelarFactura(factura.id ?? '', $event)" 
+              title="Cancelar factura"
+            >
+              <i class="fas fa-ban"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje cuando no hay facturas -->
+  <div *ngIf="!loading() && !error() && filteredFacturas().length === 0" class="empty-state">
+    <i class="fas fa-file-invoice-dollar"></i>
+    <h2>No se encontraron facturas</h2>
+    <p>Crea una nueva factura o ajusta los filtros de búsqueda</p>
+    <button class="btn btn-primary" (click)="navigateToCrearFactura()">Crear Factura</button>
+  </div>
+</div>

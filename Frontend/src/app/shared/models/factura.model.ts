@@ -10,6 +10,7 @@ export interface LineaFactura {
 
 export interface Factura {
   id?: string;
+  estado: 'pendiente' | 'pagada' | 'cancelada' | 'emitida';
   numero: string;
   fechaEmision: Date;
   fechaVencimiento: Date;
@@ -21,6 +22,18 @@ export interface Factura {
   subtotal: number;
   iva: number;
   total: number;
-  estado: 'pendiente' | 'pagada' | 'cancelada';
   notas?: string;
+  clienteDireccion?: string;
+  clienteEmail?: string;
+  clienteTelefono?: string;
+  impuestos?: string;
+  items: FacturaItem[];
+  Observaciones?: string;
+}
+
+export interface FacturaItem {
+  productoNombre: string;
+  cantidad: number;
+  precioUnitario: number;
+  subtotal: number;
 }

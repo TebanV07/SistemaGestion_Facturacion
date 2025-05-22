@@ -1,1 +1,115 @@
-<p>detalle-factura works!</p>
+<div class="detalle-factura-container">
+  <div class="header">
+    <h1>Detalle de Factura</h1>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="volver()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+      <button class="btn btn-primary" (click)="generarPDF()">
+        <i class="fas fa-file-pdf"></i> Generar PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje de carga -->
+  <div *ngIf="loading()" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando factura...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error()" class="error-message">
+    <i class="fas fa-exclamation-circle"></i>
+    <p>{{ error() }}</p>
+    <button (click)="loadFactura()">Reintentar</button>
+  </div>
+
+  <!-- Detalle de factura -->
+  <div *ngIf="!loading() && !error() && factura()" class="factura-detalle">
+    <!-- Información general -->
+    <div class="factura-section">
+      <div class="factura-header">
+        <div class="factura-info">
+          <h2>Factura #{{ factura()?.numero }}</h2>
+          <div class="factura-meta">
+            <div class="meta-item">
+              <span class="meta-label">Fecha:</span>
+              <span class="meta-value">{{ factura()?.fechaEmision | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Estado:</span>
+              <span class="badge" [ngClass]="'badge-' + factura()?.estado">
+                {{ factura()?.estado }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="factura-actions" *ngIf="factura()?.estado === 'emitida'">
+          <button class="btn btn-success" (click)="marcarComoPagada()">
+            <i class="fas fa-check-circle"></i> Marcar como Pagada
+          </button>
+          <button class="btn btn-danger" (click)="cancelarFactura()">
+            <i class="fas fa-ban"></i> Cancelar Factura
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Información del cliente -->
+    <div class="factura-section">
+      <h3>Información del Cliente</h3>
+      <div class="cliente-info">
+        <p><strong>Cliente:</strong> {{ factura()?.clienteNombre }}</p>
+        <p *ngIf="factura()?.clienteId"><strong>Identificación:</strong> {{ factura()?.clienteId }}</p>
+        <p *ngIf="factura()?.clienteDireccion"><strong>Dirección:</strong> {{ factura()?.clienteDireccion }}</p>
+        <p *ngIf="factura()?.clienteEmail"><strong>Email:</strong> {{ factura()?.clienteEmail }}</p>
+        <p *ngIf="factura()?.clienteTelefono"><strong>Teléfono:</strong> {{ factura()?.clienteTelefono }}</p>
+      </div>
+    </div>
+    <!-- Información de la empresa -->
+    <!-- Detalle de items -->
+    <div class="factura-section">
+      <h3>Detalle de Productos</h3>
+      <div class="factura-items">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of factura()?.items">
+              <td>{{ item.productoNombre || 'Producto' }}</td>
+              <td>{{ item.cantidad }}</td>
+              <td>{{ item.precioUnitario | currency }}</td>
+              <td>{{ item.subtotal | currency }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="text-right"><strong>Subtotal:</strong></td>
+              <td>{{ factura()?.subtotal | currency }}</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-right"><strong>IVA (12%):</strong></td>
+              <td>{{ factura()?.impuestos | currency }}</td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-right"><strong>Total:</strong></td>
+              <td>{{ factura()?.total | currency }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Notas y observaciones -->
+    <div class="factura-section" *ngIf="factura()?.Observaciones">
+      <h3>Observaciones</h3>
+      <p class="observaciones">{{ factura()?.Observaciones }}</p>
+    </div>
+  </div>
+</div>

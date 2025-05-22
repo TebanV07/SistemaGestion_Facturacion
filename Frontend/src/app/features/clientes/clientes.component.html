@@ -1,1 +1,196 @@
-<p>clientes works!</p>
+<div class="clientes-container">
+  <!-- Header con título y botones de acción -->
+  <div class="header">
+    <h1>Gestión de Clientes</h1>
+    <button class="btn btn-primary" (click)="openModal()">
+      <i class="fas fa-plus"></i> Nuevo Cliente
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="search-bar">
+    <div class="search-input">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="onSearch()" 
+        placeholder="Buscar cliente..."
+      >
+      <button class="search-btn" (click)="onSearch()">
+        <i class="fas fa-search"></i>
+      </button>
+    </div>
+    <div class="filter-select">
+      <select [(ngModel)]="selectedFilter" (change)="onFilterChange()">
+        <option value="todos">Todos los clientes</option>
+        <option value="recientes">Clientes recientes</option>
+        <option value="frecuentes">Clientes frecuentes</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Mensaje de carga -->
+  <div *ngIf="loading()" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando clientes...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error()" class="error-message">
+    <i class="fas fa-exclamation-circle"></i>
+    <p>{{ error() }}</p>
+    <button (click)="loadClientes()">Reintentar</button>
+  </div>
+
+  <!-- Tabla de clientes -->
+  <div *ngIf="!loading() && !error() && filteredClientes().length > 0" class="clientes-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Identificación</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Ciudad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cliente of filteredClientes()">
+          <td>{{ cliente.nombre }} {{ cliente.apellidos }}</td>
+          <td>{{ cliente.tipoIdentificacion }}: {{ cliente.identificacion }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ cliente.telefono }}</td>
+          <td>{{ cliente.ciudad }}</td>
+          <td class="actions">
+            <button class="btn-icon" (click)="openModal(cliente)" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon delete" (click)="deleteCliente(cliente.id)" title="Eliminar">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje cuando no hay clientes -->
+  <div *ngIf="!loading() && !error() && filteredClientes().length === 0" class="empty-state">
+    <i class="fas fa-users"></i>
+    <h2>No se encontraron clientes</h2>
+    <p>Agrega un nuevo cliente o ajusta los filtros de búsqueda</p>
+    <button class="btn btn-primary" (click)="openModal()">Agregar Cliente</button>
+  </div>
+
+  <!-- Modal para crear/editar cliente -->
+  <div class="modal-overlay" *ngIf="showModal()" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ isEditing() ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
+        <button class="close-btn" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="nombre">Nombre *</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            [(ngModel)]="clienteForm().nombre" 
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="apellidos">Apellidos *</label>
+          <input 
+            type="text" 
+            id="apellidos" 
+            [(ngModel)]="clienteForm().apellidos" 
+            required
+          >
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tipoIdentificacion">Tipo de Identificación *</label>
+            <select id="tipoIdentificacion" [(ngModel)]="clienteForm().tipoIdentificacion">
+              <option value="cedula">Cédula</option>
+              <option value="ruc">RUC</option>
+              <option value="pasaporte">Pasaporte</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="identificacion">Número de Identificación *</label>
+            <input 
+              type="text" 
+              id="identificacion" 
+              [(ngModel)]="clienteForm().identificacion" 
+              required
+            >
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input 
+            type="email" 
+            id="email" 
+            [(ngModel)]="clienteForm().email" 
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="telefono">Teléfono *</label>
+          <input 
+            type="tel" 
+            id="telefono" 
+            [(ngModel)]="clienteForm().telefono" 
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="direccion">Dirección</label>
+          <input 
+            type="text" 
+            id="direccion" 
+            [(ngModel)]="clienteForm().direccion"
+          >
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ciudad">Ciudad</label>
+            <input 
+              type="text" 
+              id="ciudad" 
+              [(ngModel)]="clienteForm().ciudad"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="codigoPostal">Código Postal</label>
+            <input 
+              type="text" 
+              id="codigoPostal" 
+              [(ngModel)]="clienteForm().codigoPostal"
+            >
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" (click)="saveCliente()">
+          {{ isEditing() ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

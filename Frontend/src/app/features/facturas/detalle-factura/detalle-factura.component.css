@@ -1,0 +1,270 @@
+/* Estilos generales */
+.detalle-factura-container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Botones */
+.btn {
+  padding: 10px 16px;
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: #4285f4;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #3367d6;
+}
+
+.btn-secondary {
+  background-color: #f1f3f4;
+  color: #3c4043;
+}
+
+.btn-secondary:hover {
+  background-color: #e8eaed;
+}
+
+.btn-success {
+  background-color: #34a853;
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: #137333;
+}
+
+.btn-danger {
+  background-color: #ea4335;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c5221f;
+}
+
+/* Estados de carga y error */
+.loading, .error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(66, 133, 244, 0.2);
+  border-radius: 50%;
+  border-top-color: #4285f4;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #ea4335;
+}
+
+.error-message i {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* Detalle de factura */
+.factura-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.factura-section {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  padding: 24px;
+}
+
+.factura-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.factura-info h2 {
+  margin: 0 0 16px;
+  color: #3c4043;
+  font-size: 20px;
+}
+
+.factura-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta-label {
+  font-weight: 500;
+  color: #5f6368;
+}
+
+.meta-value {
+  color: #3c4043;
+}
+
+.factura-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.badge-emitida {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+}
+
+.badge-pagada {
+  background-color: #e6f4ea;
+  color: #137333;
+}
+
+.badge-cancelada {
+  background-color: #fce8e6;
+  color: #c5221f;
+}
+
+/* Información del cliente */
+.factura-section h3 {
+  margin: 0 0 16px;
+  color: #3c4043;
+  font-size: 16px;
+}
+
+.cliente-info p {
+  margin: 8px 0;
+  color: #3c4043;
+}
+
+/* Tabla de items */
+.factura-items {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e8eaed;
+}
+
+th {
+  background-color: #f8f9fa;
+  color: #5f6368;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.text-right {
+  text-align: right;
+}
+
+tfoot tr td {
+  border-top: 1px solid #e8eaed;
+  font-weight: 500;
+}
+
+/* Observaciones */
+.observaciones {
+  margin: 0;
+  color: #3c4043;
+  white-space: pre-line;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .factura-header {
+    flex-direction: column;
+  }
+  
+  .factura-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .factura-actions button {
+    width: 100%;
+  }
+}
