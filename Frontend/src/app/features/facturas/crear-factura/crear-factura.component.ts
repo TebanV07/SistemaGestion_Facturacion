@@ -134,7 +134,7 @@ export class CrearFacturaComponent implements OnInit {
   }
 
   calcularImpuestos(): number {
-    return this.calcularSubtotal() * 0.12; // 12% de impuestos
+    return this.calcularSubtotal() * 0.15; // 12% de impuestos
   }
 
   calcularTotal(): number {

@@ -1,4 +1,10 @@
-<div class="app-container">
+<!-- Loading inicial mientras Firebase verifica autenticación -->
+<div *ngIf="authService.loading$ | async" class="loading-container">
+  <div class="loading-spinner">Cargando...</div>
+</div>
+
+<!-- App normal cuando ya terminó de cargar -->
+<div *ngIf="!(authService.loading$ | async)" class="app-container">
   <app-header *ngIf="isLoggedIn$ | async"></app-header>
   <div class="content-container" [class.with-sidebar]="isLoggedIn$ | async">
     <app-sidebar *ngIf="isLoggedIn$ | async"></app-sidebar>

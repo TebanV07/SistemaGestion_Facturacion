@@ -1,9 +1,9 @@
-import { Injectable, signal, inject, PLATFORM_ID, afterNextRender } from '@angular/core';
+import { Injectable, signal, inject, PLATFORM_ID, afterNextRender, NgZone } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
-import { Observable, from, of, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Observable, from, of, throwError, BehaviorSubject, combineLatest } from 'rxjs';
+import { catchError, map, switchMap, tap, filter } from 'rxjs/operators';
 import { Usuario } from '../../shared/models/usuario.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environment/environment';
@@ -16,11 +16,25 @@ export class AuthService {
   private firestore = inject(Firestore, { optional: true });
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
+  private ngZone = inject(NgZone); // ✅ Inyectar NgZone
   private currentUser = signal<Usuario | null>(null);
 
+  // ✅ Agregamos estado de loading
   private userSubject = new BehaviorSubject<User | null>(null);
+  private loadingSubject = new BehaviorSubject<boolean>(true); // Inicia como loading
+
   readonly user$: Observable<User | null> = this.userSubject.asObservable();
-  readonly isLoggedIn$: Observable<boolean> = this.user$.pipe(map(user => !!user));
+  readonly loading$: Observable<boolean> = this.loadingSubject.asObservable();
+  
+  // ✅ Solo emite cuando ya terminó de cargar
+  readonly isLoggedIn$: Observable<boolean> = combineLatest([
+    this.user$,
+    this.loading$
+  ]).pipe(
+    filter(([_, loading]) => !loading), // Solo emite cuando no está cargando
+    map(([user]) => !!user)
+  );
+
   readonly token$: Observable<string | null> = this.user$.pipe(
     switchMap(user => {
       if (user && isPlatformBrowser(this.platformId)) {
@@ -33,13 +47,30 @@ export class AuthService {
   constructor() {
     // Solo configurar Firebase Auth en el cliente
     if (isPlatformBrowser(this.platformId)) {
+      // ✅ Usar afterNextRender con contexto de inyección correcto
       afterNextRender(() => {
-        if (this.auth) {
-          onAuthStateChanged(this.auth, (user) => {
-            this.userSubject.next(user);
-          });
-        }
+        this.initializeAuth();
       });
+    } else {
+      // En servidor, no hay loading
+      this.loadingSubject.next(false);
+    }
+  }
+
+  private initializeAuth(): void {
+    if (this.auth) {
+      // ✅ Ejecutar Firebase Auth dentro de NgZone
+      this.ngZone.runOutsideAngular(() => {
+        onAuthStateChanged(this.auth!, (user) => {
+          // ✅ Volver a Angular zone para actualizar estado
+          this.ngZone.run(() => {
+            this.userSubject.next(user);
+            this.loadingSubject.next(false);
+          });
+        });
+      });
+    } else {
+      this.loadingSubject.next(false);
     }
   }
 

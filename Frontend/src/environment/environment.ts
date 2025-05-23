@@ -1,6 +1,7 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:5000/api',
+production: false,
+  useEmulators: false,
+  apiUrl: 'http://localhost:5000',
   firebase: {
 apiKey: "AIzaSyB6WVQhiLaVOxYh2avuO1RkHywEmodq-34",
   authDomain: "sistemagf.firebaseapp.com",
